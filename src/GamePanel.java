@@ -35,6 +35,8 @@ public class GamePanel extends JPanel{
 	private JTextField anwser_tf;
 	private JButton exit_btn;
 	
+	private Object key; // 스레드 공유변수 접근 문제를 처리해주는 레퍼런스
+	
 	public GamePanel(GameFrame gf, int diff) {
 		this.gf = gf;
 		this.difficulty = diff;
@@ -55,7 +57,7 @@ public class GamePanel extends JPanel{
 	}
 	
 	private void setWordList() {
-		File f = new File("word.txt");
+		File f = new File("word.txts");
 		try {
 			Scanner sc = new Scanner(f);
 			
@@ -157,8 +159,10 @@ public class GamePanel extends JPanel{
 				
 				if(y>=word_panel.getHeight()) {
 					reset();
-					score-=50;
-					score_lb.setText(Integer.toString(score));
+					synchronized(key) {
+						score-=50;
+						score_lb.setText(Integer.toString(score));
+					}
 				}
 				
 				setLocation(x, y);
